@@ -54,8 +54,6 @@ def menu():
                                     success = add_guest_from_file(file_name)
                                     if success:
                                         print("写入成功")
-                                        for guest in all_guests.values():
-                                            print(guest.name)
                                 elif choice == '2':
                                     success = add_guest(input("name:"),
                                                         input("sex:"),

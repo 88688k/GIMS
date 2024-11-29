@@ -21,7 +21,7 @@ def add_guest(name,
     for guest in all_guests.values():
         guest:Guest
         if guest.region == region and guest.id == id:
-            if permissionlevel > guest.permission.permissionlevel:
+            if permissionlevel > guest.permission.permissionLevel:
                 new_permission = Permission(permissionlevel, "Guest")
                 guest.permission = new_permission
                 print("权限已更新")
