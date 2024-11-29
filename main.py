@@ -105,7 +105,7 @@ def menu():
                                     for guest in all_guests.values():
                                         if guest.region == region and guest.id == id:
                                             print(f"{guest.guest_id}  {guest.name: <12}\t{guest.sex}\t{guest.region}\t{guest.position}")
-                                elif choice == '6':
+                                elif choice == '5':
                                     break
                     elif choice == '3':
                         if staff.role != "综合协调组":
@@ -219,3 +219,4 @@ def menu():
 if __name__ == "__main__":
     system_init()
     menu()
+    save_data()

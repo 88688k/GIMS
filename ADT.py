@@ -3,9 +3,9 @@ class Guest:
                  name,
                  sex,
                  region,
+                 id,
                  phone,
                  position,
-                 id,
                  permission,
                  car_number,
                  arrive_point,
@@ -13,9 +13,9 @@ class Guest:
         self.name = name
         self.sex = sex
         self.region = region
+        self.id = id
         self.phone = phone
         self.position = position
-        self.id = id
         self.permission = permission
         self.car_number = car_number
         self.arrive_point = arrive_point

@@ -35,9 +35,9 @@ def add_guest(name,
                  name,
                  sex,
                  region,
+                 id,
                  phone,
                  position,
-                 id,
                  permission,
                  car_number,
                  arrive_point,
@@ -137,5 +137,56 @@ def invite_from_file(file_name, event):
                 if guest.region == region and guest.id == id:
                     event.invite_guest(guest)
 
+def save_guest_data():
+    file = open("data/guest_data.csv","w")
+    file.close()
+    df = pd.DataFrame(columns =("guest_id",
+                                "name",
+                                "sex",
+                                "region",
+                                "id",
+                                "phone",
+                                "position",
+                                "permissionlevel",
+                                "car_number",
+                                "arrive_point",
+                                "arrive_time"))
+    guests = list(all_guests.values())
+    for i in range(len(guests)):
+        guest = guests[i]
+        df.loc[i] = [guest.guest_id, guest.name, guest.sex, guest.region, 
+                     guest.id, guest.phone, guest.position, guest.permission.permissionLevel,
+                     guest.car_number, guest.arrive_point, guest.arrive_time]
+    df.to_csv("data/guest_data.csv")
+
+def read_guest_data():
+    try:
+        df = pd.read_csv("data/guest_data.csv")
+    except:
+        return
+    else:
+        if df.empty:
+            return False
+        for i in range(len(df)):
+            permission = Permission(df.loc[i, "permissionlevel"], "Guest")
+            new_guest = Guest(df.loc[i, "name"],
+                    df.loc[i, "sex"],
+                    df.loc[i, "region"],
+                    df.loc[i, "id"],
+                    df.loc[i, "phone"],
+                    df.loc[i, "position"],
+                    permission,
+                    df.loc[i, "car_number"],
+                    df.loc[i, "arrive_point"],
+                    df.loc[i, "arrive_time"])
+            new_guest.guest_id = df.loc[i, "guest_id"]
+            all_guests[df.loc[i, "guest_id"]] = new_guest
+        return True
+
+    
+def save_data():
+    save_guest_data()
+
 def system_init():
+    read_guest_data()
     read_staff_data()
