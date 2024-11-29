@@ -1,10 +1,11 @@
 from ADT import *
 import pandas as pd
 
-all_guests = []
+all_guests = {}
 all_staffs = []
-all_cards = []
+all_cards = {}
 all_events = []
+checkinstaions = []
 
 def add_guest(name,
             sex,
@@ -12,9 +13,12 @@ def add_guest(name,
             id,
             phone,
             position,
-            permissionlevel):
+            permissionlevel,
+            car_number,
+            arrive_point,
+            arrive_time):
     permissionlevel = int(permissionlevel)
-    for guest in all_guests:
+    for guest in all_guests.values():
         guest:Guest
         if guest.region == region and guest.id == id:
             if permissionlevel > guest.permission.permissionlevel:
@@ -26,6 +30,7 @@ def add_guest(name,
         print("不支持的性别")
         return False
     permission = Permission(permissionlevel, "Guest")
+    arrive_time = Time(arrive_time)
     new_guest = Guest(
                  name,
                  sex,
@@ -33,8 +38,13 @@ def add_guest(name,
                  phone,
                  position,
                  id,
-                 permission)
-    all_guests.append(new_guest)
+                 permission,
+                 car_number,
+                 arrive_point,
+                 arrive_time)
+    guest_id = f"G{new_guest.permission.permissionLevel}0{len(all_guests.values()) + 1}"
+    new_guest.guest_id = guest_id
+    all_guests[guest_id] = new_guest
     return True
 
 def add_guest_from_file(file_name):
@@ -48,18 +58,11 @@ def add_guest_from_file(file_name):
                   df.loc[i, "id"],
                   df.loc[i, "phone"],
                   df.loc[i, "position"],
-                  df.loc[i, "permissionLevel"])
+                  df.loc[i, "permissionLevel"],
+                  df.loc[i, "car_number"],
+                  df.loc[i, "arrive_point"],
+                  df.loc[i, "arrive_time"])
     return True
-
-
-    # for line in file.readlines():
-    #     line:str
-    #     line = line.strip()
-    #     items = line.split(" ")
-    #     for item in items[:]:
-    #         if item == "" or item == '\n':
-    #             items.remove(item)
-    #     add_guest(items[0], items[1], items[2], items[3], items[4], items[5], items[6])
 
 
 def add_staff(name, role, staff_id = None):
@@ -89,13 +92,50 @@ def read_staff_data():
                       df.loc[i, "staff_id"])
 
 def make_card(guest):
-    card_id = f"G{guest.permission.permissionLevel}0{len(all_cards) + 1}"
+    card_id = guest.guest_id
     new_card = Card(guest.permission, card_id, True, guest)
-    all_cards.append(new_card)
+    guest.card = new_card
+    all_cards[card_id] = new_card
+
+def distribute_card():
+    for guest in all_guests.values():
+        if guest.arrive_point not in checkinstaions:
+            new_station = CheckInStaion(guest.arrive_point)
+            new_station.cards.append(guest.card)
+            checkinstaions.append(new_station)
+        else:
+            for station in checkinstaions:
+                if station.location == guest.arrive_point:
+                    station.cards.append(guest.card)
 
 def add_event(name, startTime, endTime):
+    startTime = Time(startTime)
+    endTime = Time(endTime)
     new_event = Event(name, startTime, endTime)
     all_events.append(new_event)
+
+def add_event_from_file(file_name):
+    df = pd.read_csv(file_name)
+    if df.empty:
+        return False
+    else:
+        for i in range(len(df)):
+            add_event(df.loc[i, "name"],
+                      df.loc[i, "startTime"],
+                      df.loc[i, "endTime"])
+    return True
+
+def invite_from_file(file_name, event):
+    df = pd.read_csv(file_name)
+    if df.empty:
+        return False
+    else:
+        for i in range(len(df)):
+            region = df.loc[i, "region"]
+            id = df.loc[i, "id"]
+            for guest in all_guests.values():
+                if guest.region == region and guest.id == id:
+                    event.invite_guest(guest)
 
 def system_init():
     read_staff_data()

@@ -6,7 +6,10 @@ class Guest:
                  phone,
                  position,
                  id,
-                 permission) -> None:
+                 permission,
+                 car_number,
+                 arrive_point,
+                 arrive_time) -> None:
         self.name = name
         self.sex = sex
         self.region = region
@@ -14,14 +17,15 @@ class Guest:
         self.position = position
         self.id = id
         self.permission = permission
+        self.car_number = car_number
+        self.arrive_point = arrive_point
+        self.arrive_time = arrive_time
         self.card = None
         self.events = []
-        self.shedule = []
-        self.checkInStation = None
         self.guest_id = None
     
     def __str__(self) -> str:
-        return self.name + self.sex + self.region + self.id + self.phone
+        return f"{self.name} {self.sex} {self.region} {self.id} {self.phone}"
 
 class Staff:
     def __init__(self, name, role) -> None:
@@ -31,10 +35,8 @@ class Staff:
         # self.permission = permission
 
 class CheckInStaion:
-    def __init__(self, location, startTime, endTime) -> None:
+    def __init__(self, location) -> None:
         self.location = location
-        self.startTime = startTime
-        self.endTime = endTime
         self.cards = []
 
 class Permission:
@@ -65,14 +67,24 @@ class Event:
 class Card:
     def __init__(self, permission, card_id, status, guest) -> None:
         self.permission = permission
-        self.guest = card_id
+        self.card_id = card_id
         self.status = status
         self.owner = guest
+        self.station = None
 
 class Time:
-    def __init__(self, month, day) -> None:
+    def __init__(self, month, day, hour, minute) -> None:
         self.month = month
         self.day = day
+        self.hour = hour
+        self.minute = minute
+    
+    def __init__(self, string):
+        string = string.split(" ")
+        self.month = string[0].split("-")[1]
+        self.day = string[0].split("-")[2]
+        self.hour = string[1].split(":")[0]
+        self.minute = string[1].split(":")[1]
     
     def __eq__(self, other: object) -> bool:
         if self.month == other.month and self.day == other.day:
@@ -92,4 +104,4 @@ class Time:
             return False
     
     def __str__(self) -> str:
-        return f"{self.month}月{self.day}日"
+        return f"{self.month}月{self.day}日{self.hour}时{self.minute}分"
